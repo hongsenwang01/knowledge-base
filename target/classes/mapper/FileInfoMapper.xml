@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.filemanager.mapper.FileInfoMapper">
+    
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.example.filemanager.entity.FileInfo">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="original_name" property="originalName" jdbcType="VARCHAR"/>
+        <result column="stored_name" property="storedName" jdbcType="VARCHAR"/>
+        <result column="file_path" property="filePath" jdbcType="VARCHAR"/>
+        <result column="file_size" property="fileSize" jdbcType="BIGINT"/>
+        <result column="file_type" property="fileType" jdbcType="VARCHAR"/>
+        <result column="mime_type" property="mimeType" jdbcType="VARCHAR"/>
+        <result column="md5_hash" property="md5Hash" jdbcType="VARCHAR"/>
+        <result column="directory_id" property="directoryId" jdbcType="BIGINT"/>
+        <result column="description" property="description" jdbcType="LONGVARCHAR"/>
+        <result column="download_count" property="downloadCount" jdbcType="INTEGER"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+        <result column="deleted" property="deleted" jdbcType="TINYINT"/>
+    </resultMap>
+    
+    <!-- 基础字段列表 -->
+    <sql id="Base_Column_List">
+        id, original_name, stored_name, file_path, file_size, file_type, 
+        mime_type, md5_hash, directory_id, description, download_count, 
+        created_at, updated_at, deleted
+    </sql>
+    
+    <!-- 根据目录ID查询文件列表 -->
+    <select id="selectByDirectoryId" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM file_info
+        WHERE directory_id = #{directoryId}
+        AND deleted = 0
+        ORDER BY created_at DESC
+    </select>
+    
+    <!-- 分页查询文件列表 -->
+    <select id="selectFilesWithPage" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM file_info
+        WHERE deleted = 0
+        <if test="directoryId != null">
+            AND directory_id = #{directoryId}
+        </if>
+        ORDER BY created_at DESC
+    </select>
+    
+    <!-- 根据MD5查询文件 -->
+    <select id="selectByMd5Hash" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM file_info
+        WHERE md5_hash = #{md5Hash}
+        AND deleted = 0
+        LIMIT 1
+    </select>
+    
+    <!-- 更新文件下载次数 -->
+    <update id="updateDownloadCount">
+        UPDATE file_info
+        SET download_count = download_count + 1,
+            updated_at = NOW()
+        WHERE id = #{fileId}
+        AND deleted = 0
+    </update>
+    
+    <!-- 统计文件总大小 -->
+    <select id="sumTotalFileSize" resultType="java.lang.Long">
+        SELECT COALESCE(SUM(file_size), 0)
+        FROM file_info
+        WHERE deleted = 0
+    </select>
+    
+</mapper> 

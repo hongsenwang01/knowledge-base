@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.filemanager.mapper.DirectoryMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.example.filemanager.entity.Directory">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="parent_id" property="parentId" jdbcType="BIGINT"/>
+        <result column="path" property="path" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="LONGVARCHAR"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+        <result column="deleted" property="deleted" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <!-- 基础查询字段 -->
+    <sql id="Base_Column_List">
+        id, name, parent_id, path, description, created_at, updated_at, deleted
+    </sql>
+
+    <!-- 查询所有未删除的目录 -->
+    <select id="selectAllDirectories" resultMap="BaseResultMap">
+        SELECT 
+            <include refid="Base_Column_List"/>
+        FROM directories
+        WHERE deleted = 0
+        ORDER BY parent_id ASC, name ASC
+    </select>
+
+    <!-- 分页查询所有未删除的目录 -->
+    <select id="selectAllDirectoriesWithPage" resultMap="BaseResultMap">
+        SELECT 
+            <include refid="Base_Column_List"/>
+        FROM directories
+        WHERE deleted = 0
+        ORDER BY parent_id ASC, name ASC
+    </select>
+
+    <!-- 根据父目录ID查询子目录 -->
+    <select id="selectByParentId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT 
+            <include refid="Base_Column_List"/>
+        FROM directories
+        WHERE parent_id = #{parentId}
+          AND deleted = 0
+        ORDER BY name ASC
+    </select>
+
+    <!-- 根据路径查询目录 -->
+    <select id="selectByPath" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT 
+            <include refid="Base_Column_List"/>
+        FROM directories
+        WHERE path = #{path}
+          AND deleted = 0
+        LIMIT 1
+    </select>
+
+</mapper> 
