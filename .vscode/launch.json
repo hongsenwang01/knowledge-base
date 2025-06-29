@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "java",
+        "name": "FileManagerApplication",
+        "request": "launch",
+        "mainClass": "com.example.filemanager.FileManagerApplication",
+        "projectName": "hello"
+      },
+      {
+        "type": "java",
+        "name": "Launch FileManagerApplication",
+        "request": "launch",
+        "mainClass": "com.example.filemanager.FileManagerApplication",
+        "projectName": "file-manager"
+      }
+    ]
+  }
+  
